@@ -5,7 +5,7 @@ directly or read it as HTML by using
 [Marginalia](https://github.com/gdeer81/marginalia):
 
 ```shellsession
-$ lein marginalia
+$ lein marg
 ```
 
 ## License
