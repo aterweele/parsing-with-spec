@@ -24,7 +24,11 @@
 
 ;; Answer: while both will accept `()`, `(())`, `((()))`, etc.,
 ;; `::simple-nesting-redux` will not accept the empty string.
-(s/valid? ::simple-nesting-redux (seq ""))
+(->> ""
+     seq
+     (s/valid? ::simple-nesting-redux)
+     not
+     assert)
 
 ;; Simple nesting demonstrates an straightforward recursion. Let's
 ;; write a spec for balanced parentheses that will parse strings like
@@ -70,14 +74,12 @@
              :right #{\)}))))
 
 ;; Let's try it out!
-(s/conform ::s-expression (seq "(abc  def)"))
-
-;; evaluates to
-[[:sub {:left  \(
-        :nest  [[:atom [\a \b \c]]
-                [:whitespace [\space \space]]
-                [:atom [\d \e \f]]]
-        :right \)}]]
+(assert (= (s/conform ::s-expression (seq "(abc  def)"))
+           [[:sub {:left  \(
+                   :nest  [[:atom [\a \b \c]]
+                           [:whitespace [\space \space]]
+                           [:atom [\d \e \f]]]
+                   :right \)}]]))
 
 ;; As in the CSV example, we have to apply `seq` to the input data
 ;; before we `s/conform` it, and atoms and whitespace are expressed as
@@ -132,13 +134,11 @@
              :nest ::s-expression*
              :right #{\)}))))
 
-;; Now we can conform a string...
-(s/conform ::s-expression "(abc  def)")
-
-;; ...and get a conformed value with atoms and whitespace that are
-;; strings.
-[[:sub {:left  \(
-        :nest  [[:atom "abc"]
-                [:whitespace "  "]
-                [:atom "def"]]
-        :right \)}]]
+;; Now we can conform a string and get a conformed value with atoms
+;; and whitespace that are strings.
+(assert (= (s/conform ::s-expression "(abc  def)")
+           [[:sub {:left  \(
+                   :nest  [[:atom "abc"]
+                           [:whitespace "  "]
+                           [:atom "def"]]
+                   :right \)}]]))

@@ -14,9 +14,8 @@
       (complement #{\, \newline}))))
 
 ;; We can use it like so:
-(s/conform ::cell (seq "abc"))
-;; yielding
-[\a \b \c]
+(assert (= (s/conform ::cell (seq "abc"))
+           [\a \b \c]))
 
 ;; a row is a sequence of cells separated by a comma, the cell
 ;; separator. We require every cell to be followed by the delimiter,
@@ -29,9 +28,8 @@
       :delim #{\,})))
 
 ;; Which we use like this:
-(s/conform ::row (seq "abc,"))
-;; yielding
-[{:cell [\a \b \c], :delim \,}]
+(assert (= (s/conform ::row (seq "abc,"))
+           [{:cell [\a \b \c], :delim \,}]))
 
 ;; a table is a sequence of rows, separated by a newline, the row
 ;; separator. Much like in `::row`, we require every row to be folowed
@@ -42,15 +40,13 @@
       :row ::row
       :delim #{\newline})))
 
-(s/conform ::table (seq "abc,123,\ndef,456,\n"))
-
-;; yielding
-[{:row [{:cell [\a \b \c], :delim \,}
-        {:cell [\1 \2 \3], :delim \,}]
-  :delim \newline}
- {:row [{:cell [\d \e \f], :delim \,}
-        {:cell [\4 \5 \6], :delim \,}]
-  :delim \newline}]
+(assert (= (s/conform ::table (seq "abc,123,\ndef,456,\n"))
+           [{:row [{:cell [\a \b \c], :delim \,}
+                   {:cell [\1 \2 \3], :delim \,}]
+             :delim \newline}
+            {:row [{:cell [\d \e \f], :delim \,}
+                   {:cell [\4 \5 \6], :delim \,}]
+             :delim \newline}]))
 
 ;; This approach has a few undesirable qualities. Note the need to
 ;; "explode" the input string into a seq with `(seq "...")` before we
@@ -125,13 +121,11 @@
     (s/conformer (partial apply str))))
 
 ;; Now, evaluating the expression from before
-(s/conform ::table "a,1,\nb,2,\n")
-
-;; Will give us
-[{:row [{:cell "a", :delim \,}
-        {:cell "1", :delim \,}], :delim \newline}
- {:row [{:cell "b", :delim \,}
-        {:cell "2", :delim \,}], :delim \newline}]
+(assert (= (s/conform ::table "a,1,\nb,2,\n")
+           [{:row [{:cell "a", :delim \,}
+                   {:cell "1", :delim \,}], :delim \newline}
+            {:row [{:cell "b", :delim \,}
+                   {:cell "2", :delim \,}], :delim \newline}]))
 
 ;; Using conformers without specifying an unformer means that
 ;; `s/unform` cannot work:
@@ -151,7 +145,6 @@
            :row ::row
            :delim #{\newline}))))
 
-;; Now we can evaluate
-(s/unform ::table (s/conform ::table "a,1,\nb,2,\n"))
-;; yielding
-"a,1,\nb,2,\n"
+;; Now we can use `s/unform`:
+(assert (= (s/unform ::table (s/conform ::table "a,1,\nb,2,\n"))
+           "a,1,\nb,2,\n"))
