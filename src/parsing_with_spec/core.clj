@@ -1,4 +1,5 @@
 (ns parsing-with-spec.core
+  "Introduction to the relevant pieces of spec."
   (:require [clojure.spec.alpha :as s]))
 
 ;; TODO: fix indentation according to Clojure norms.
@@ -57,3 +58,31 @@
 ;; It evaluates to
 [{:e 0, :o 1} {:e 2, :o 3}]
 
+;; When we compose regex ops, they operate on the same seq.
+
+;; We need to know about one more regex op: `s/alt`:
+(-> #'s/alt meta :doc)
+
+;; "Takes key+pred pairs, e.g.
+;; 
+;;   (s/alt :even even? :small #(< % 42))
+;; 
+;;   Returns a regex op that returns a map entry containing the key of the
+;;   first matching pred and the corresponding value. Thus the
+;;   'key' and 'val' functions can be used to refer generically to the
+;;   components of the tagged return"
+
+;; For example:
+(s/conform
+  (s/alt
+    :e even?
+    :o odd?)
+  [1])
+;; Which evaluates to
+[:o 1]
+
+;; We use `[1]` as the value because `s/alt` is a regex op that
+;; operates on sequences.
+
+;; The result is a pair. The first element indicates what path was
+;; taken, and the second is the conformed value.
