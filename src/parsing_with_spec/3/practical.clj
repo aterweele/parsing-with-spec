@@ -20,11 +20,13 @@
   (s/conformer
     #(try (Long. %)
           (catch NumberFormatException e
-            :clojure.spec.alpha/invalid))))
+            :clojure.spec.alpha/invalid))
+    str))
 
 (s/def ::int-encoded-boolean
   (s/conformer
-    #(get {"0" false, "1" true} % :clojure.spec.alpha/invalid)))
+    #(get {"0" false, "1" true} % :clojure.spec.alpha/invalid)
+    {false "0", true "1"}))
 
 (s/def ::happiness (s/and number? #(<= 1 % 10)))
 
@@ -32,7 +34,10 @@
 ;; seqs.
 (s/def :table/as-nested-list
   (s/conformer
-    (partial map (comp (partial map :cell) :row))))
+    (partial map (comp (partial map :cell) :row))
+    (partial map (comp
+                   (partial assoc {:delim \newline} :row)
+                   (partial map (partial assoc {:delim \,} :cell))))))
 
 ;; managers must meet the minimum happiness requirement.
 (defn happy-enough?

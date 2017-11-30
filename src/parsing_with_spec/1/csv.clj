@@ -133,3 +133,25 @@
  {:row [{:cell "b", :delim \,}
         {:cell "2", :delim \,}], :delim \newline}]
 
+;; Using conformers without specifying an unformer means that
+;; `s/unform` cannot work:
+(comment
+  (s/unform ::table (s/conform ::table "a,1,\nb,2,\n")))
+
+;; So let's specify an unformers every time we use `s/conformer`.
+(s/def ::cell
+  (s/&
+    (s/* (s/and char? (complement #{\, \newline})))
+    (s/conformer (partial apply str) seq)))
+
+(s/def ::table
+  (s/and
+    (s/conformer seq (partial apply str))
+    (s/* (s/cat
+           :row ::row
+           :delim #{\newline}))))
+
+;; Now we can evaluate
+(s/unform ::table (s/conform ::table "a,1,\nb,2,\n"))
+;; yielding
+"a,1,\nb,2,\n"
