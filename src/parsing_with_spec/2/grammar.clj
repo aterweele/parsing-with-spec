@@ -1,4 +1,4 @@
-(ns parsing-with-spec.grammar
+(ns parsing-with-spec.2.grammar
   (:require [clojure.spec.alpha :as s]))
 
 ;; `s/def` allows for the recursive definitions of specs. Let's write
