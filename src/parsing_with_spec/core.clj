@@ -2,8 +2,6 @@
   "Introduction to the relevant pieces of spec."
   (:require [clojure.spec.alpha :as s]))
 
-;; TODO: fix indentation according to Clojure norms.
-
 ;; Recall the docstring of `s/cat`:
 
 (-> #'s/cat meta :doc)
