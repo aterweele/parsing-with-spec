@@ -32,7 +32,7 @@
            [{:cell [\a \b \c], :delim \,}]))
 
 ;; a table is a sequence of rows, separated by a newline, the row
-;; separator. Much like in `::row`, we require every row to be folowed
+;; separator. Much like in `::row`, we require every row to be followed
 ;; by the row delimiter.
 (s/def ::table
   (s/*
